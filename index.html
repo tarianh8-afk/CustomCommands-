@@ -12,7 +12,6 @@
   --yellow:#ffd54a;
   --green:#22c55e;
   --red:#ff4d4d;
-  --white:#ffffff;
 }
 
 *{box-sizing:border-box}
@@ -24,30 +23,30 @@ body{
   overflow-x:hidden;
 }
 
-/* PARTICLE CANVAS */
+/* Animated Background */
 canvas{
   position:fixed;
   inset:0;
   z-index:-1;
 }
 
-/* LAYOUT */
+/* Layout */
 .wrapper{
-  max-width:850px;
+  max-width:900px;
   margin:auto;
-  padding:40px 20px 60px;
+  padding:40px 20px 80px;
 }
 
-/* HEADER */
+/* Header */
 .header{
-  padding:28px;
+  padding:30px;
   border-radius:20px;
   background:rgba(255,255,255,0.04);
   backdrop-filter:blur(15px);
   border:1px solid rgba(255,255,255,0.08);
   margin-bottom:35px;
   animation:float 6s ease-in-out infinite;
-  box-shadow:0 0 40px rgba(255,122,24,0.15);
+  box-shadow:0 0 60px rgba(255,122,24,0.15);
 }
 
 @keyframes float{
@@ -67,9 +66,14 @@ canvas{
   gap:12px;
 }
 
-h1{margin:0;font-size:22px}
+h1{
+  margin:0;
+  font-size:24px;
+  background:linear-gradient(90deg,var(--orange),var(--yellow));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
 
-/* STATUS DOT */
 .status-dot{
   width:12px;
   height:12px;
@@ -93,7 +97,7 @@ h1{margin:0;font-size:22px}
 }
 
 .admin-btn{
-  padding:6px 14px;
+  padding:6px 16px;
   border-radius:40px;
   border:1px solid var(--orange);
   background:transparent;
@@ -107,12 +111,25 @@ h1{margin:0;font-size:22px}
   opacity:.8;
 }
 
-/* CARDS */
+/* Overview Health Circle */
+.health{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.health-value{
+  font-size:40px;
+  font-weight:700;
+  background:linear-gradient(90deg,var(--orange),var(--yellow));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* Cards */
 .card{
   padding:22px;
   border-radius:18px;
   background:rgba(255,255,255,0.03);
-  backdrop-filter:blur(10px);
   border:1px solid rgba(255,255,255,0.06);
   margin-bottom:20px;
   transition:.3s;
@@ -137,7 +154,6 @@ h1{margin:0;font-size:22px}
 .active{color:var(--green);border-color:var(--green)}
 .maintenance{color:var(--yellow);border-color:var(--yellow)}
 .offline{color:var(--red);border-color:var(--red)}
-.beta{color:white;border-color:white}
 
 .progress{
   height:8px;
@@ -149,28 +165,10 @@ h1{margin:0;font-size:22px}
   height:100%;
   border-radius:40px;
   background:linear-gradient(90deg,var(--orange),var(--yellow));
-  position:relative;
   transition:width 1.2s ease;
 }
-.progress-bar::after{
-  content:"";
-  position:absolute;
-  top:0;
-  left:-50%;
-  width:40%;
-  height:100%;
-  background:linear-gradient(120deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,.8) 50%,
-    rgba(255,255,255,0) 100%);
-  animation:shine 6s linear infinite;
-}
-@keyframes shine{
-  from{left:-50%}
-  to{left:150%}
-}
 
-/* SLIDE ADMIN PANEL */
+/* Admin Panel */
 .admin-panel{
   position:fixed;
   top:0;
@@ -182,7 +180,6 @@ h1{margin:0;font-size:22px}
   transition:.4s ease;
   overflow-y:auto;
   z-index:10;
-  box-shadow:-10px 0 40px rgba(0,0,0,.6);
 }
 .admin-panel.open{right:0}
 
@@ -193,11 +190,6 @@ h1{margin:0;font-size:22px}
   background:#111;
   border:1px solid #333;
   color:white;
-}
-
-.lock-message{
-  color:var(--red);
-  font-size:14px;
 }
 
 @media(max-width:600px){
@@ -221,31 +213,51 @@ h1{margin:0;font-size:22px}
     <div class="timer" id="timer"></div>
   </div>
 
+  <div class="health">
+    <div>System Health</div>
+    <div class="health-value" id="healthValue">100%</div>
+  </div>
+
   <div id="services"></div>
 </div>
 
 <div class="admin-panel" id="adminPanel">
   <h3>Admin Login</h3>
-  <div id="loginSection">
-    <input type="password" id="passwordInput" placeholder="Enter Password">
-    <button onclick="checkPassword()">Login</button>
-    <div class="lock-message" id="lockMessage"></div>
-  </div>
-  <div id="controlSection" style="display:none;"></div>
+  <input type="password" id="passwordInput" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <div id="controls" style="display:none;"></div>
 </div>
 
 <script>
-const PASSWORD="nova123";
-let attempts=0;
-let lockedUntil=0;
+const PASSWORD_HASH="8d969eef6ecad3c29a3a629280e686cf"; // hash for 123456 (example)
+let loggedIn=false;
 
 let services=JSON.parse(localStorage.getItem("services"))||[
-  {name:"Command Engine",percent:0,status:"offline"},
+  {name:"Command Engine",percent:100,status:"active"},
   {name:"Moderation Tools",percent:85,status:"active"},
   {name:"Automation System",percent:60,status:"maintenance"}
 ];
 
 function save(){localStorage.setItem("services",JSON.stringify(services));}
+
+function calculateHealth(){
+  let score=100;
+  services.forEach(s=>{
+    if(s.status==="offline") score-=30;
+    if(s.status==="maintenance") score-=10;
+  });
+  if(score<0) score=0;
+  document.getElementById("healthValue").textContent=score+"%";
+}
+
+function updateStatusDot(){
+  const dot=document.getElementById("statusDot");
+  let color="var(--green)";
+  if(services.some(s=>s.status==="offline")) color="var(--red)";
+  else if(services.some(s=>s.status==="maintenance")) color="var(--yellow)";
+  dot.style.background=color;
+  dot.style.boxShadow=`0 0 12px ${color}`;
+}
 
 function render(){
   const container=document.getElementById("services");
@@ -260,24 +272,14 @@ function render(){
       <div class="progress">
         <div class="progress-bar" style="width:${s.percent}%"></div>
       </div>
-      <div>${s.percent}%</div>
     </div>`;
   });
+  calculateHealth();
   updateStatusDot();
 }
-
-function updateStatusDot(){
-  const dot=document.getElementById("statusDot");
-  let color="var(--green)";
-  if(services.some(s=>s.status==="offline")) color="var(--red)";
-  else if(services.some(s=>s.status==="maintenance")) color="var(--yellow)";
-  dot.style.background=color;
-  dot.style.boxShadow=`0 0 12px ${color}`;
-}
-
 render();
 
-/* TIMER */
+/* Timer */
 const start=new Date("2026-01-01T00:00:00Z");
 setInterval(()=>{
   const diff=new Date()-start;
@@ -289,75 +291,52 @@ setInterval(()=>{
   `Established: ${d}d ${h}h ${m}m ${s}s`;
 },1000);
 
-/* ADMIN */
+/* Admin */
 function toggleAdmin(){
   document.getElementById("adminPanel").classList.toggle("open");
 }
-function checkPassword(){
-  if(Date.now()<lockedUntil){
-    document.getElementById("lockMessage").textContent="Locked. Wait 30 seconds.";
-    return;
-  }
-  if(document.getElementById("passwordInput").value===PASSWORD){
-    document.getElementById("loginSection").style.display="none";
+
+function login(){
+  const input=document.getElementById("passwordInput").value;
+  if(input==="123456"){ // demo password
+    loggedIn=true;
     loadControls();
-  } else {
-    attempts++;
-    if(attempts>=5){
-      lockedUntil=Date.now()+30000;
-      attempts=0;
-    }
-    document.getElementById("lockMessage").textContent="Wrong password.";
   }
 }
 
 function loadControls(){
-  const c=document.getElementById("controlSection");
+  const c=document.getElementById("controls");
   c.style.display="block";
-  c.innerHTML="<h3>Service Controls</h3>";
+  c.innerHTML="<h3>Manage Services</h3>";
   services.forEach((s,i)=>{
     c.innerHTML+=`
-    <strong>${s.name}</strong>
-    <input type="number" value="${s.percent}" onchange="updatePercent(${i},this.value)">
-    <select onchange="updateStatus(${i},this.value)">
-      <option value="active">active</option>
-      <option value="maintenance">maintenance</option>
-      <option value="offline">offline</option>
-      <option value="beta">beta</option>
-    </select>
-    <button onclick="removeService(${i})">Remove</button>
-    <hr>`;
+      <strong>${s.name}</strong>
+      <input type="number" value="${s.percent}" onchange="updatePercent(${i},this.value)">
+      <select onchange="updateStatus(${i},this.value)">
+        <option value="active">active</option>
+        <option value="maintenance">maintenance</option>
+        <option value="offline">offline</option>
+      </select>
+      <hr>`;
   });
-  c.innerHTML+=`
-  <h3>Add Service</h3>
-  <input type="text" id="newName" placeholder="Service Name">
-  <button onclick="addService()">Add</button>`;
 }
 
 function updatePercent(i,v){services[i].percent=v;save();render();}
 function updateStatus(i,v){services[i].status=v;save();render();}
-function removeService(i){services.splice(i,1);save();render();loadControls();}
-function addService(){
-  const name=document.getElementById("newName").value;
-  if(name){
-    services.push({name,percent:0,status:"active"});
-    save();render();loadControls();
-  }
-}
 
-/* PARTICLES */
+/* Particles */
 const canvas=document.getElementById("bg");
 const ctx=canvas.getContext("2d");
 function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
 resize();addEventListener("resize",resize);
 
 let particles=[];
-for(let i=0;i<50;i++){
+for(let i=0;i<60;i++){
   particles.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height,
-    dx:(Math.random()-.5)*.5,
-    dy:(Math.random()-.5)*.5
+    dx:(Math.random()-.5)*.4,
+    dy:(Math.random()-.5)*.4
   });
 }
 function animate(){
