@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Custom Commands</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -10,79 +9,56 @@
 :root{
   --orange:#ff7a18;
   --yellow:#ffd54a;
-  --green:#22c55e;
-  --red:#ff4d4d;
+  --bg:#0f0b06;
 }
 
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:'Inter',sans-serif;
-  background:#0f0b06;
+  background:var(--bg);
   color:white;
   overflow-x:hidden;
 }
 
-/* Animated Background */
+/* PARTICLES */
 canvas{
   position:fixed;
   inset:0;
   z-index:-1;
 }
 
-/* Layout */
+/* WRAPPER */
 .wrapper{
-  max-width:900px;
+  max-width:750px;
   margin:auto;
   padding:40px 20px 80px;
 }
 
-/* Header */
+/* HEADER */
 .header{
-  padding:30px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.04);
-  backdrop-filter:blur(15px);
-  border:1px solid rgba(255,255,255,0.08);
-  margin-bottom:35px;
-  animation:float 6s ease-in-out infinite;
-  box-shadow:0 0 60px rgba(255,122,24,0.15);
-}
-
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-8px)}
+  padding:25px;
+  border-radius:18px;
+  background:rgba(255,122,24,0.08);
+  border:1px solid rgba(255,122,24,0.25);
+  margin-bottom:30px;
 }
 
 .header-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.left{
   display:flex;
   align-items:center;
   gap:12px;
 }
 
-h1{
-  margin:0;
-  font-size:24px;
-  background:linear-gradient(90deg,var(--orange),var(--yellow));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
 .status-dot{
-  width:12px;
-  height:12px;
+  width:14px;
+  height:14px;
   border-radius:50%;
-  background:var(--green);
+  background:var(--orange);
   position:relative;
-  box-shadow:0 0 12px var(--green);
+  box-shadow:0 0 12px var(--orange);
 }
-.status-dot::before{
+.status-dot::after{
   content:"";
   position:absolute;
   inset:0;
@@ -96,64 +72,41 @@ h1{
   100%{opacity:0}
 }
 
-.admin-btn{
-  padding:6px 16px;
-  border-radius:40px;
-  border:1px solid var(--orange);
-  background:transparent;
-  color:var(--orange);
-  cursor:pointer;
-}
+h1{margin:0;font-size:22px}
 
 .timer{
-  margin-top:12px;
-  font-size:14px;
-  opacity:.8;
+  margin-top:10px;
+  color:var(--yellow);
+  font-weight:600;
 }
 
-/* Overview Health Circle */
-.health{
-  text-align:center;
-  margin-bottom:30px;
-}
-
-.health-value{
-  font-size:40px;
-  font-weight:700;
-  background:linear-gradient(90deg,var(--orange),var(--yellow));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-/* Cards */
+/* CARDS */
 .card{
   padding:22px;
   border-radius:18px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,122,24,0.06);
+  border:1px solid rgba(255,122,24,0.2);
   margin-bottom:20px;
   transition:.3s;
 }
 .card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 0 30px rgba(255,122,24,.25);
+  box-shadow:0 0 25px rgba(255,122,24,.3);
 }
 
 .card-top{
   display:flex;
   justify-content:space-between;
   margin-bottom:14px;
+  align-items:center;
 }
 
 .badge{
   font-size:12px;
-  padding:5px 14px;
+  padding:6px 14px;
   border-radius:40px;
-  border:1px solid;
+  border:1px solid var(--orange);
+  color:var(--orange);
 }
-.active{color:var(--green);border-color:var(--green)}
-.maintenance{color:var(--yellow);border-color:var(--yellow)}
-.offline{color:var(--red);border-color:var(--red)}
 
 .progress{
   height:8px;
@@ -163,37 +116,93 @@ h1{
 }
 .progress-bar{
   height:100%;
-  border-radius:40px;
   background:linear-gradient(90deg,var(--orange),var(--yellow));
-  transition:width 1.2s ease;
+  border-radius:40px;
+  position:relative;
 }
-
-/* Admin Panel */
-.admin-panel{
-  position:fixed;
+.progress-bar::after{
+  content:"";
+  position:absolute;
   top:0;
-  right:-420px;
-  width:400px;
+  left:-50%;
+  width:40%;
   height:100%;
+  background:linear-gradient(120deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.8) 50%,
+    rgba(255,255,255,0) 100%);
+  animation:shine 5s linear infinite;
+}
+@keyframes shine{
+  from{left:-50%}
+  to{left:150%}
+}
+
+.percent{
+  margin-top:8px;
+  font-size:14px;
+  color:#ddd;
+}
+
+/* ADMIN BUTTON */
+.admin-btn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:var(--orange);
+  border:none;
+  padding:12px 18px;
+  border-radius:50px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 0 20px rgba(255,122,24,.5);
+}
+
+/* ADMIN MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  visibility:hidden;
+  opacity:0;
+  transition:.3s;
+}
+.modal.active{
+  visibility:visible;
+  opacity:1;
+}
+
+.modal-box{
+  width:90%;
+  max-width:420px;
   background:#1a120a;
-  padding:25px;
-  transition:.4s ease;
-  overflow-y:auto;
-  z-index:10;
+  padding:30px;
+  border-radius:20px;
+  border:1px solid var(--orange);
+  text-align:center;
 }
-.admin-panel.open{right:0}
 
-.admin-panel input, .admin-panel select{
+.modal-box input{
   width:100%;
-  margin-bottom:10px;
-  padding:8px;
-  background:#111;
-  border:1px solid #333;
+  padding:12px;
+  margin:15px 0;
+  background:#222;
+  border:1px solid #444;
   color:white;
+  border-radius:10px;
 }
 
-@media(max-width:600px){
-  .admin-panel{width:100%}
+.modal-box button{
+  width:100%;
+  padding:12px;
+  background:var(--orange);
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -204,78 +213,51 @@ h1{
 <div class="wrapper">
   <div class="header">
     <div class="header-top">
-      <div class="left">
-        <div class="status-dot" id="statusDot"></div>
-        <h1>Custom Commands</h1>
-      </div>
-      <button class="admin-btn" onclick="toggleAdmin()">Admin</button>
+      <div class="status-dot"></div>
+      <h1>Custom Commands</h1>
     </div>
     <div class="timer" id="timer"></div>
-  </div>
-
-  <div class="health">
-    <div>System Health</div>
-    <div class="health-value" id="healthValue">100%</div>
   </div>
 
   <div id="services"></div>
 </div>
 
-<div class="admin-panel" id="adminPanel">
-  <h3>Admin Login</h3>
-  <input type="password" id="passwordInput" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <div id="controls" style="display:none;"></div>
+<button class="admin-btn" onclick="openModal()">Admin</button>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2 style="color:var(--orange)">Admin Access</h2>
+    <input type="password" id="pass" placeholder="Enter Password">
+    <button onclick="login()">Login</button>
+  </div>
 </div>
 
 <script>
-const PASSWORD_HASH="8d969eef6ecad3c29a3a629280e686cf"; // hash for 123456 (example)
-let loggedIn=false;
+const PASSWORD="nova123";
 
-let services=JSON.parse(localStorage.getItem("services"))||[
-  {name:"Command Engine",percent:100,status:"active"},
-  {name:"Moderation Tools",percent:85,status:"active"},
-  {name:"Automation System",percent:60,status:"maintenance"}
+let services=[
+  {name:"Command Engine",percent:0,badge:"Down"},
+  {name:"Moderation Tools",percent:80,badge:"Operational"},
+  {name:"Automation System",percent:55,badge:"Updating"},
+  {name:"Beta Commands",percent:35,badge:"Beta"}
 ];
-
-function save(){localStorage.setItem("services",JSON.stringify(services));}
-
-function calculateHealth(){
-  let score=100;
-  services.forEach(s=>{
-    if(s.status==="offline") score-=30;
-    if(s.status==="maintenance") score-=10;
-  });
-  if(score<0) score=0;
-  document.getElementById("healthValue").textContent=score+"%";
-}
-
-function updateStatusDot(){
-  const dot=document.getElementById("statusDot");
-  let color="var(--green)";
-  if(services.some(s=>s.status==="offline")) color="var(--red)";
-  else if(services.some(s=>s.status==="maintenance")) color="var(--yellow)";
-  dot.style.background=color;
-  dot.style.boxShadow=`0 0 12px ${color}`;
-}
 
 function render(){
   const container=document.getElementById("services");
   container.innerHTML="";
-  services.forEach((s,i)=>{
+  services.forEach(s=>{
     container.innerHTML+=`
     <div class="card">
       <div class="card-top">
         <div>${s.name}</div>
-        <div class="badge ${s.status}">${s.status}</div>
+        <div class="badge">${s.badge}</div>
       </div>
       <div class="progress">
         <div class="progress-bar" style="width:${s.percent}%"></div>
       </div>
+      <div class="percent">${s.percent}%</div>
     </div>`;
   });
-  calculateHealth();
-  updateStatusDot();
 }
 render();
 
@@ -291,40 +273,18 @@ setInterval(()=>{
   `Established: ${d}d ${h}h ${m}m ${s}s`;
 },1000);
 
-/* Admin */
-function toggleAdmin(){
-  document.getElementById("adminPanel").classList.toggle("open");
+/* Admin Modal */
+function openModal(){
+  document.getElementById("modal").classList.add("active");
 }
-
 function login(){
-  const input=document.getElementById("passwordInput").value;
-  if(input==="123456"){ // demo password
-    loggedIn=true;
-    loadControls();
+  if(document.getElementById("pass").value===PASSWORD){
+    alert("Access Granted (Admin panel can be expanded next)");
+    document.getElementById("modal").classList.remove("active");
   }
 }
 
-function loadControls(){
-  const c=document.getElementById("controls");
-  c.style.display="block";
-  c.innerHTML="<h3>Manage Services</h3>";
-  services.forEach((s,i)=>{
-    c.innerHTML+=`
-      <strong>${s.name}</strong>
-      <input type="number" value="${s.percent}" onchange="updatePercent(${i},this.value)">
-      <select onchange="updateStatus(${i},this.value)">
-        <option value="active">active</option>
-        <option value="maintenance">maintenance</option>
-        <option value="offline">offline</option>
-      </select>
-      <hr>`;
-  });
-}
-
-function updatePercent(i,v){services[i].percent=v;save();render();}
-function updateStatus(i,v){services[i].status=v;save();render();}
-
-/* Particles */
+/* PARTICLES */
 const canvas=document.getElementById("bg");
 const ctx=canvas.getContext("2d");
 function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
@@ -347,7 +307,7 @@ function animate(){
     if(p.y<0||p.y>canvas.height)p.dy*=-1;
     ctx.beginPath();
     ctx.arc(p.x,p.y,2,0,Math.PI*2);
-    ctx.fillStyle="rgba(255,180,100,.7)";
+    ctx.fillStyle="rgba(255,140,50,.7)";
     ctx.fill();
   });
   requestAnimationFrame(animate);
